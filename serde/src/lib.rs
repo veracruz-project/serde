@@ -126,7 +126,7 @@
 // Rustc lints.
 #![forbid(unsafe_code)]
 #![deny(missing_docs, unused_imports)]
-#![cfg_attr(feature = "mesalock_sgx", feature(never_type))]
+//#![cfg_attr(feature = "mesalock_sgx", feature(never_type))]
 
 ////////////////////////////////////////////////////////////////////////////////
 
