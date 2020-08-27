@@ -265,7 +265,7 @@ fn test_gen() {
     #[cfg(feature = "unstable")]
     #[derive(Serialize, Deserialize)]
     struct NonAsciiIdents {
-        σ:  f64,
+        σ: f64,
     }
 
     #[derive(Serialize, Deserialize)]
@@ -690,6 +690,23 @@ fn test_gen() {
     struct FlattenSkipDeserializing<T> {
         #[serde(flatten, skip_deserializing)]
         flat: T,
+    }
+
+    // https://github.com/serde-rs/serde/issues/1804
+    #[derive(Serialize, Deserialize)]
+    enum Message {
+        #[serde(skip)]
+        #[allow(dead_code)]
+        String(String),
+        #[serde(other)]
+        Unknown,
+    }
+
+    #[derive(Serialize)]
+    #[repr(packed)]
+    struct Packed {
+        x: u8,
+        y: u16,
     }
 }
 

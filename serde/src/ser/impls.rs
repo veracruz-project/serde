@@ -635,7 +635,7 @@ impl Serialize for SystemTime {
         use super::SerializeStruct;
         let duration_since_epoch = self
             .duration_since(UNIX_EPOCH)
-            .expect("SystemTime must be later than UNIX_EPOCH");
+            .map_err(|_| S::Error::custom("SystemTime must be later than UNIX_EPOCH"))?;
         let mut state = serializer.serialize_struct("SystemTime", 2)?;
         state.serialize_field("secs_since_epoch", &duration_since_epoch.as_secs())?;
         state.serialize_field("nanos_since_epoch", &duration_since_epoch.subsec_nanos())?;

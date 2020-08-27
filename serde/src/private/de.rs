@@ -183,7 +183,9 @@ where
         }
     }
 
-    deserializer.deserialize_bytes(CowBytesVisitor).map(From::from)
+    deserializer
+        .deserialize_bytes(CowBytesVisitor)
+        .map(From::from)
 }
 
 pub mod size_hint {
@@ -2472,7 +2474,7 @@ mod content {
         where
             M: MapAccess<'de>,
         {
-            while let Some(_) = access.next_entry::<IgnoredAny, IgnoredAny>()? {}
+            while try!(access.next_entry::<IgnoredAny, IgnoredAny>()).is_some() {}
             Ok(())
         }
     }
