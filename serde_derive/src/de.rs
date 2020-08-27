@@ -8,7 +8,7 @@ use bound;
 use dummy;
 use fragment::{Expr, Fragment, Match, Stmts};
 use internals::ast::{Container, Data, Field, Style, Variant};
-use internals::{attr, Ctxt, Derive};
+use internals::{attr, ungroup, Ctxt, Derive};
 use pretend;
 
 use std::collections::BTreeSet;
@@ -77,7 +77,7 @@ fn precondition(cx: &Ctxt, cont: &Container) {
 fn precondition_sized(cx: &Ctxt, cont: &Container) {
     if let Data::Struct(_, fields) = &cont.data {
         if let Some(last) = fields.last() {
-            if let syn::Type::Slice(_) = *last.ty {
+            if let syn::Type::Slice(_) = ungroup(last.ty) {
                 cx.error_spanned_by(
                     cont.original,
                     "cannot deserialize a dynamically sized struct",
@@ -1153,12 +1153,12 @@ fn prepare_enum_variant_enum(
     variants: &[Variant],
     cattrs: &attr::Container,
 ) -> (TokenStream, Stmts) {
-    let mut deserialized_variants = variants.
+    let mut deserialized_variants = variants
         .iter()
         .enumerate()
         .filter(|&(_, variant)| !variant.attrs.skip_deserializing());
 
-    let variant_name_idents: Vec<_> = deserialized_variants
+    let variant_names_idents: Vec<_> = deserialized_variants
         .clone()
         .map(|(i, variant)| {
             (
@@ -1407,11 +1407,10 @@ fn deserialize_adjacently_tagged_enum(
                 }
             };
             Some(quote! {
-                __Field::#variant_index => #arm
+                __Field::#variant_index => #arm,
             })
         })
         .collect::<Vec<_>>();
-
     if !missing_content_arms.is_empty() {
         missing_content = quote! {
             match __field {

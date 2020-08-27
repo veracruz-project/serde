@@ -107,6 +107,7 @@ impl Parameters {
         };
 
         let is_packed = cont.attrs.is_packed();
+        
         let generics = build_generics(cont);
 
         Parameters {
@@ -114,7 +115,7 @@ impl Parameters {
             this,
             generics,
             is_remote,
-            is_packed
+            is_packed,
         }
     }
 

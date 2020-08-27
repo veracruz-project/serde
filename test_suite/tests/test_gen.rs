@@ -4,7 +4,11 @@
 
 #![deny(warnings)]
 #![cfg_attr(feature = "unstable", feature(non_ascii_idents))]
-#![allow(clippy::trivially_copy_pass_by_ref)]
+#![allow(
+    unknown_lints,
+    mixed_script_confusables,
+    clippy::trivially_copy_pass_by_ref
+)]
 
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
@@ -708,6 +712,17 @@ fn test_gen() {
         x: u8,
         y: u16,
     }
+
+    macro_rules! deriving {
+        ($field:ty) => {
+            #[derive(Deserialize)]
+            struct MacroRules<'a> {
+                field: $field,
+            }
+        };
+    }
+
+    deriving!(&'a str);
 }
 
 //////////////////////////////////////////////////////////////////////////

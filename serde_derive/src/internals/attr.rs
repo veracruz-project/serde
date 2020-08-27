@@ -1,5 +1,5 @@
 use internals::symbol::*;
-use internals::Ctxt;
+use internals::{ungroup, Ctxt};
 use proc_macro2::{Group, Span, TokenStream, TokenTree};
 use quote::ToTokens;
 use std::borrow::Cow;
@@ -222,7 +222,7 @@ pub struct Container {
     identifier: Identifier,
     has_flatten: bool,
     serde_path: Option<syn::Path>,
-    is_packed: bool
+    is_packed: bool,
 }
 
 /// Styles of representing an enum.
@@ -597,7 +597,11 @@ impl Container {
         for attr in &item.attrs {
             if attr.path.is_ident("repr") {
                 let _ = attr.parse_args_with(|input: ParseStream| {
-                    is_packed |= input.parse::<Ident>()? == "packed";
+                    while let Some(token) = input.parse()? {
+                        if let TokenTree::Ident(ident) = token {
+                            is_packed |= ident == "packed";
+                        }
+                    }
                     Ok(())
                 });
             }
@@ -622,7 +626,7 @@ impl Container {
             identifier: decide_identifier(cx, item, field_identifier, variant_identifier),
             has_flatten: false,
             serde_path: serde_path.get(),
-            is_packed
+            is_packed,
         }
     }
 
@@ -1413,7 +1417,7 @@ impl Field {
                 let expr = syn::ExprPath {
                     attrs: Vec::new(),
                     qself: None,
-                    path: path,
+                    path,
                 };
                 deserialize_with.set_if_none(expr);
             }
@@ -1737,7 +1741,7 @@ fn is_implicitly_borrowed_reference(ty: &syn::Type) -> bool {
 //         cow: Cow<'a, str>,
 //     }
 fn is_cow(ty: &syn::Type, elem: fn(&syn::Type) -> bool) -> bool {
-    let path = match ty {
+    let path = match ungroup(ty) {
         syn::Type::Path(ty) => &ty.path,
         _ => {
             return false;
@@ -1764,7 +1768,7 @@ fn is_cow(ty: &syn::Type, elem: fn(&syn::Type) -> bool) -> bool {
 }
 
 fn is_option(ty: &syn::Type, elem: fn(&syn::Type) -> bool) -> bool {
-    let path = match ty {
+    let path = match ungroup(ty) {
         syn::Type::Path(ty) => &ty.path,
         _ => {
             return false;
@@ -1811,7 +1815,7 @@ fn is_option(ty: &syn::Type, elem: fn(&syn::Type) -> bool) -> bool {
 //         r: &'a str,
 //     }
 fn is_reference(ty: &syn::Type, elem: fn(&syn::Type) -> bool) -> bool {
-    match ty {
+    match ungroup(ty) {
         syn::Type::Reference(ty) => ty.mutability.is_none() && elem(&ty.elem),
         _ => false,
     }
@@ -1822,14 +1826,14 @@ fn is_str(ty: &syn::Type) -> bool {
 }
 
 fn is_slice_u8(ty: &syn::Type) -> bool {
-    match ty {
+    match ungroup(ty) {
         syn::Type::Slice(ty) => is_primitive_type(&ty.elem, "u8"),
         _ => false,
     }
 }
 
 fn is_primitive_type(ty: &syn::Type, primitive: &str) -> bool {
-    match ty {
+    match ungroup(ty) {
         syn::Type::Path(ty) => ty.qself.is_none() && is_primitive_path(&ty.path, primitive),
         _ => false,
     }

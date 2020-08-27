@@ -1878,3 +1878,31 @@ fn test_internally_tagged_newtype_variant_containing_unit_struct() {
         ],
     );
 }
+
+#[deny(safe_packed_borrows)]
+#[test]
+fn test_packed_struct_can_derive_serialize() {
+    #[derive(Copy, Clone, Serialize)]
+    #[repr(packed, C)]
+    struct PackedC {
+        t: f32,
+    }
+
+    #[derive(Copy, Clone, Serialize)]
+    #[repr(C, packed)]
+    struct CPacked {
+        t: f32,
+    }
+
+    #[derive(Copy, Clone, Serialize)]
+    #[repr(C, packed(2))]
+    struct CPacked2 {
+        t: f32,
+    }
+
+    #[derive(Copy, Clone, Serialize)]
+    #[repr(packed(2), C)]
+    struct Packed2C {
+        t: f32,
+    }
+}
