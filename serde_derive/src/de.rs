@@ -1153,7 +1153,7 @@ fn prepare_enum_variant_enum(
     variants: &[Variant],
     cattrs: &attr::Container,
 ) -> (TokenStream, Stmts) {
-    let mut deserialize_variants =
+    let mut deserialized_variants = variants.
         .iter()
         .enumerate()
         .filter(|&(_, variant)| !variant.attrs.skip_deserializing());
