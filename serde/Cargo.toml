@@ -14,7 +14,6 @@ include = ["build.rs", "src/**/*.rs", "crates-io.md", "README.md", "LICENSE-APAC
 build = "build.rs"
 
 [dependencies]
-sgx_tstd = { rev = "v1.1.2", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true }
 serde_derive = { version = "=1.0.115", optional = true, path = "../serde_derive" }
 
 [dev-dependencies]
@@ -54,5 +53,3 @@ alloc = []
 # does not preserve identity and may result in multiple copies of the same data.
 # Be sure that this is what you want before enabling this feature.
 rc = []
-
-mesalock_sgx = ["sgx_tstd", "std"]

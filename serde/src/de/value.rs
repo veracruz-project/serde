@@ -21,8 +21,6 @@
 //! }
 //! ```
 
-#[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))]
-use std::prelude::v1::*;
 use lib::*;
 
 use self::private::{First, Second};

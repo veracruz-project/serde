@@ -1380,7 +1380,6 @@ fn deserialize_adjacently_tagged_enum(
     let mut missing_content = quote! {
         _serde::export::Err(<__A::Error as _serde::de::Error>::missing_field(#content))
     };
-    
     let mut missing_content_fallthrough = quote!();
     let missing_content_arms = variants
         .iter()

@@ -136,16 +136,8 @@
 // Rustc lints.
 #![forbid(unsafe_code)]
 #![deny(missing_docs, unused_imports)]
-//#![cfg_attr(feature = "mesalock_sgx", feature(never_type))]
 
 ////////////////////////////////////////////////////////////////////////////////
-
-#![cfg_attr(all(feature = "mesalock_sgx", not(target_env = "sgx")), no_std)]
-#![cfg_attr(all(target_env = "sgx", target_vendor = "mesalock"), feature(rustc_private))]
-
-#[cfg(all(feature = "mesalock_sgx", not(target_env = "sgx")))]
-#[macro_use]
-extern crate sgx_tstd as std;
 
 #[cfg(feature = "alloc")]
 extern crate alloc;
@@ -226,10 +218,8 @@ mod lib {
     pub use std::num::Wrapping;
     #[cfg(feature = "std")]
     pub use std::path::{Path, PathBuf};
-    #[cfg(all(feature = "std", not(feature = "mesalock_sgx")))]
+    #[cfg(feature = "std")]
     pub use std::sync::{Mutex, RwLock};
-    #[cfg(all(feature = "std", feature = "mesalock_sgx"))]
-    pub use std::sync::{SgxMutex as Mutex, SgxRwLock as RwLock};
     #[cfg(feature = "std")]
     pub use std::time::{SystemTime, UNIX_EPOCH};
 

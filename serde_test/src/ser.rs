@@ -1,4 +1,3 @@
-use std::prelude::v1::*;
 use serde::{ser, Serialize};
 
 use error::Error;

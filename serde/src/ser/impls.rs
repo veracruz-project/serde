@@ -553,9 +553,6 @@ where
     }
 }
 
-#[cfg(all(feature = "std", any(feature = "mesalock_sgx", all(target_env = "sgx", target_vendor = "mesalock"))))]
-use std::sync::{SgxMutex as Mutex, SgxRwLock as RwLock};
-
 #[cfg(feature = "std")]
 impl<T> Serialize for Mutex<T>
 where
